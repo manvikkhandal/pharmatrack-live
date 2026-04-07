@@ -1,65 +1,41 @@
 
 
-## Route-Task System Upgrade
+## Enterprise UI/UX Polish
 
-### Overview
-Transform the current simple tracker into a full route-task management system with admin employee/route management, MR route execution with geofenced check-ins, and route history visualization.
+### 1. Visual Design — Theme & Typography
+- **`index.html`**: Add Google Fonts link for **Inter** (weights 400, 500, 600, 700). Update `<title>` to "Pharma Field Force Tracker".
+- **`tailwind.config.ts`**: Set `fontFamily.sans` to `['Inter', ...defaultTheme.fontFamily.sans]`.
+- **`src/index.css`**: Refine the Medical Blue theme — keep current `--primary: 210 80% 45%`, update `--background` to a subtle cool-white (`210 20% 98%`), add card shadow utility class (`.card-elevated { @apply shadow-md shadow-primary/5 border-border/50; }`).
 
-### Firestore Data Model
+### 2. Card Shadows & Polish
+- **`AdminDashboard.tsx`**: Add `shadow-md` to all `<Card>` components across all four tabs.
+- **`MRDashboard.tsx`**: Add `shadow-md` to both GPS and Route cards.
+- **`Login.tsx`**: Add `shadow-xl` to the login card for a floating feel.
 
-```text
-users/{mrId}
-  ├── email, name, role, createdAt
+### 3. Responsiveness
+- **Admin tabs**: Change `grid-cols-4` on `TabsList` to `grid-cols-2 sm:grid-cols-4` so tabs stack 2x2 on mobile.
+- **Route Builder clinic inputs**: Stack lat/lng vertically on mobile with `flex-col sm:flex-row`.
+- **MR Dashboard**: Already `max-w-md mx-auto` — just ensure buttons don't overflow by adding `text-xs sm:text-sm` to check-in buttons.
+- **Admin map container**: Use `h-[calc(100vh-10rem)]` for proper mobile fit.
 
-routes/{routeId}
-  ├── mrId, mrName, status (assigned|in-progress|completed), createdAt
-  └── clinics: [{ id, name, lat, lng, order }]
+### 4. Toast Notifications (already mostly present)
+- Verify and ensure these toasts exist:
+  - Route Builder `handleSave`: `toast.success("Route assigned successfully!")` — update wording.
+  - MR `handleCheckIn`: `toast.success("Check-in successful!")` — update wording.
+  - Login `handleLogin` catch: `toast.error("Login failed: ...")` — already present, refine message.
 
-visits/{visitId}
-  ├── routeId, mrId, clinicId, clinicName, lat, lng, checkedInAt
+### 5. Route History Polyline Color
+- **`AdminDashboard.tsx`** `RouteHistoryTab.loadHistory`: Change polyline color from `hsl(221.2, 83.2%, 53.3%)` (blue) to `#22c55e` (bright green, weight 5, opacity 0.9) so it stands out.
 
-history/{mrId}/points/{autoId}
-  ├── lat, lng, timestamp
-```
+### 6. Logout Button
+- **Admin**: Already has logout in header — ensure it's styled prominently with `variant="outline"` and visible icon+text.
+- **MR**: Already has logout — same treatment, ensure it's in the top-right header area.
 
-### Files to Create/Modify
-
-**New files:**
-1. `src/lib/firebaseAuth.ts` — Firebase Auth helpers (createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChange listener)
-2. `src/contexts/AuthContext.tsx` — Auth context providing current user + role
-3. `src/pages/AdminDashboard.tsx` — Tabbed admin page replacing current AdminView:
-   - **Map tab**: existing live map (moved here)
-   - **Employees tab**: create MR accounts (email/password via Firebase Auth), list existing MRs from `users` collection
-   - **Route Builder tab**: select MR, add clinic checkpoints (name, lat, lng), save route to `routes` collection
-   - **Route History tab**: select completed route, fetch `history/{mrId}/points`, draw polyline on map
-4. `src/pages/MRDashboard.tsx` — Replaces current MRView:
-   - Shows assigned route as a checklist of clinics
-   - Each clinic has a "Check-in" button, disabled unless GPS is within 100m (Haversine formula)
-   - GPS tracking continues writing to `history/{mrId}/points` every 20 seconds
-   - "Route Complete" button enabled only when all clinics checked
-   - On completion, updates route status to `completed`
-5. `src/lib/geo.ts` — Haversine distance utility function
-
-**Modified files:**
-6. `src/pages/Login.tsx` — Replace role buttons with email/password login form. After login, read user doc from `users` collection to determine role and redirect.
-7. `src/App.tsx` — Wrap routes in AuthContext, add protected routing based on role
-8. `src/pages/AdminView.tsx` — Delete (merged into AdminDashboard)
-9. `src/pages/MRView.tsx` — Delete (merged into MRDashboard)
-
-### Key Implementation Details
-
-- **Firebase Auth**: Use `firebase/auth` for real authentication. Admin creates MR accounts via `createUserWithEmailAndPassword`, then writes a `users/{uid}` doc with `role: "mr"`. Admin account is seeded or hardcoded.
-- **Geofencing**: Haversine formula calculates distance between MR's current GPS and clinic coordinates. Check-in button only enabled when distance < 100m.
-- **Background GPS**: `watchPosition` + 20s interval writes to `history/{mrId}/points` subcollection with `addDoc`.
-- **Route History polyline**: Fetch all docs from `history/{mrId}/points`, sort by timestamp, draw as Leaflet polyline on the map.
-- **Admin Dashboard** uses Tabs component (already available via shadcn) for switching between Map, Employees, Route Builder, and Route History views.
-
-### Step-by-step
-
-1. Create `firebaseAuth.ts` and `AuthContext.tsx` with Firebase Auth integration
-2. Update `Login.tsx` to email/password form with role-based redirect
-3. Create `geo.ts` with Haversine distance function
-4. Build `AdminDashboard.tsx` with all four tabs (Map, Employees, Route Builder, Route History)
-5. Build `MRDashboard.tsx` with route checklist, geofenced check-in, GPS tracking to history, and route completion
-6. Update `App.tsx` routing and delete old view files
+### Files Modified
+1. `index.html` — Add Inter font, update title
+2. `tailwind.config.ts` — Set Inter as default font
+3. `src/index.css` — Subtle background tweak, card utility
+4. `src/pages/AdminDashboard.tsx` — Card shadows, responsive tabs, polyline color, toast wording, logout styling
+5. `src/pages/MRDashboard.tsx` — Card shadows, responsive button text, toast wording
+6. `src/pages/Login.tsx` — Card shadow, title update
 
