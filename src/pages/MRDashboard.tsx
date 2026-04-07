@@ -163,7 +163,7 @@ const MRDashboard = () => {
       if (route.status === "assigned") {
         await updateDoc(doc(db, "routes", route.id), { status: "in-progress" });
       }
-      toast.success(`Checked in at ${clinic.name}`);
+      toast.success(`Check-in successful — ${clinic.name}`);
     } catch (e: any) {
       toast.error("Check-in failed");
     }
