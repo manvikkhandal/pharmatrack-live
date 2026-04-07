@@ -243,13 +243,6 @@ const RouteBuilderTab = () => {
     clinicMarkersRef.current.forEach((m) => m.remove());
     clinicMarkersRef.current = [];
 
-    const clinicIcon = L.divIcon({
-      html: `<div style="background:hsl(173 80% 40%);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3);color:white;font-weight:700;font-size:12px"></div>`,
-      className: "",
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
-    });
-
     clinics.forEach((c, i) => {
       const icon = L.divIcon({
         html: `<div style="background:hsl(173 80% 40%);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3);color:white;font-weight:700;font-size:12px">${i + 1}</div>`,
