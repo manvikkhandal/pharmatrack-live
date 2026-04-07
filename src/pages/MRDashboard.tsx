@@ -193,7 +193,7 @@ const MRDashboard = () => {
           <h1 className="text-lg font-bold text-foreground">{mrName}</h1>
           <p className="text-xs text-muted-foreground">Medical Representative</p>
         </div>
-        <Button variant="ghost" size="sm" className="gap-1" onClick={handleLogout}>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={handleLogout}>
           <LogOut className="h-4 w-4" /> Logout
         </Button>
       </div>
