@@ -466,7 +466,7 @@ const RouteHistoryTab = () => {
 /* ─── Admin Dashboard ─── */
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const _user = useAuth();
 
   const handleLogout = async () => {
     await logoutUser();
