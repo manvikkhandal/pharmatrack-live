@@ -228,7 +228,7 @@ const MRDashboard = () => {
       </Card>
 
       {/* Assigned Route */}
-      <Card>
+      <Card className="card-elevated">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Navigation className="h-5 w-5 text-primary" /> Assigned Route
