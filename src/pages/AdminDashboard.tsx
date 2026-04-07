@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, MapPin, Users, Route, History, LogOut } from "lucide-react";
+import { Plus, Trash2, MapPin, Users, Route, History, LogOut } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -48,7 +48,7 @@ interface RouteDoc {
 
 const createMotorcycleIcon = () =>
   L.divIcon({
-    html: `<div style="background:hsl(221.2 83.2% 53.3%);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)">
+    html: `<div style="background:hsl(210 80% 45%);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="M12 17V5l4 6h5"/><path d="M3 17h2"/></svg>
     </div>`,
     className: "",
@@ -100,11 +100,11 @@ const LiveMapTab = () => {
   }, [locations]);
 
   return (
-    <div className="relative h-[calc(100vh-12rem)]">
+    <div className="relative h-[calc(100vh-10rem)]">
       <div className="absolute top-2 right-2 z-[1000] bg-background/90 backdrop-blur rounded-lg px-3 py-2 shadow-lg text-sm font-medium">
         {locations.length} MR{locations.length !== 1 ? "s" : ""} Online
       </div>
-      <div ref={mapContainerRef} className="h-full w-full rounded-lg" />
+      <div ref={mapContainerRef} className="h-full w-full rounded-lg shadow-md" />
     </div>
   );
 };
@@ -130,7 +130,7 @@ const EmployeesTab = () => {
     setCreating(true);
     try {
       await registerMR(email, password, name);
-      toast.success(`MR "${name}" created`);
+      toast.success(`MR "${name}" created successfully`);
       setEmail(""); setName(""); setPassword("");
     } catch (e: any) {
       toast.error(e.message || "Failed to create MR");
@@ -140,7 +140,7 @@ const EmployeesTab = () => {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="card-elevated">
         <CardHeader><CardTitle className="text-base">Create MR Account</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -151,7 +151,7 @@ const EmployeesTab = () => {
           </Button>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="card-elevated">
         <CardHeader><CardTitle className="text-base">MR List ({mrs.length})</CardTitle></CardHeader>
         <CardContent>
           {mrs.length === 0 ? (
@@ -160,11 +160,11 @@ const EmployeesTab = () => {
             <div className="space-y-2">
               {mrs.map((mr) => (
                 <div key={mr.id} className="flex items-center justify-between rounded-lg border p-3">
-                  <div>
-                    <p className="font-medium text-sm">{mr.name}</p>
-                    <p className="text-xs text-muted-foreground">{mr.email}</p>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm truncate">{mr.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{mr.email}</p>
                   </div>
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">{mr.id.slice(0, 8)}</span>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded shrink-0 ml-2">{mr.id.slice(0, 8)}</span>
                 </div>
               ))}
             </div>
@@ -223,7 +223,7 @@ const RouteBuilderTab = () => {
           order: i,
         })),
       });
-      toast.success("Route assigned");
+      toast.success("Route assigned successfully!");
       setClinics([{ name: "", lat: "", lng: "" }]);
       setSelectedMr("");
     } catch (e: any) {
@@ -243,11 +243,11 @@ const RouteBuilderTab = () => {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="card-elevated">
         <CardHeader><CardTitle className="text-base">Create Route</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <select
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             value={selectedMr}
             onChange={(e) => setSelectedMr(e.target.value)}
           >
@@ -262,7 +262,7 @@ const RouteBuilderTab = () => {
               <div key={i} className="flex gap-2 items-start">
                 <div className="flex-1 space-y-1">
                   <Input placeholder="Clinic name" value={c.name} onChange={(e) => updateClinic(i, "name", e.target.value)} />
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input placeholder="Latitude" value={c.lat} onChange={(e) => updateClinic(i, "lat", e.target.value)} />
                     <Input placeholder="Longitude" value={c.lng} onChange={(e) => updateClinic(i, "lng", e.target.value)} />
                   </div>
@@ -284,7 +284,7 @@ const RouteBuilderTab = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="card-elevated">
         <CardHeader><CardTitle className="text-base">Active Routes ({routes.length})</CardTitle></CardHeader>
         <CardContent>
           {routes.length === 0 ? (
@@ -293,13 +293,13 @@ const RouteBuilderTab = () => {
             <div className="space-y-2">
               {routes.map((r) => (
                 <div key={r.id} className="flex items-center justify-between rounded-lg border p-3">
-                  <div>
-                    <p className="font-medium text-sm">{r.mrName}</p>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm truncate">{r.mrName}</p>
                     <p className="text-xs text-muted-foreground">
                       {r.clinics?.length || 0} clinics · <span className={r.status === "completed" ? "text-green-600" : "text-primary"}>{r.status}</span>
                     </p>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => handleDeleteRoute(r.id)}>
+                  <Button variant="ghost" size="icon" className="shrink-0" onClick={() => handleDeleteRoute(r.id)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
@@ -344,12 +344,10 @@ const RouteHistoryTab = () => {
     const map = mapRef.current;
     if (!map) return;
 
-    // Clear old
     polylineRef.current?.remove();
     clinicMarkersRef.current.forEach((m) => m.remove());
     clinicMarkersRef.current = [];
 
-    // Draw clinic markers
     const clinicIcon = L.divIcon({
       html: `<div style="background:hsl(0 84.2% 60.2%);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg></div>`,
       className: "",
@@ -361,7 +359,6 @@ const RouteHistoryTab = () => {
       clinicMarkersRef.current.push(m);
     });
 
-    // Fetch history
     const histSnap = await getDocs(
       query(collection(db, "history", route.mrId, "points"), orderBy("timestamp"))
     );
@@ -371,7 +368,7 @@ const RouteHistoryTab = () => {
     });
 
     if (points.length > 0) {
-      const pl = L.polyline(points, { color: "hsl(221.2, 83.2%, 53.3%)", weight: 4, opacity: 0.8 }).addTo(map);
+      const pl = L.polyline(points, { color: "#22c55e", weight: 5, opacity: 0.9 }).addTo(map);
       polylineRef.current = pl;
       map.fitBounds(pl.getBounds().pad(0.2));
     } else if (route.clinics?.length) {
@@ -382,7 +379,7 @@ const RouteHistoryTab = () => {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="card-elevated">
         <CardHeader><CardTitle className="text-base">Completed Routes</CardTitle></CardHeader>
         <CardContent>
           {routes.length === 0 ? (
@@ -405,7 +402,7 @@ const RouteHistoryTab = () => {
         </CardContent>
       </Card>
       <div className="h-[calc(100vh-20rem)]">
-        <div ref={mapContainerRef} className="h-full w-full rounded-lg" />
+        <div ref={mapContainerRef} className="h-full w-full rounded-lg shadow-md" />
       </div>
     </div>
   );
@@ -423,15 +420,18 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b px-4 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-foreground">Admin Dashboard</h1>
-        <Button variant="ghost" size="sm" className="gap-1" onClick={handleLogout}>
+      <header className="border-b bg-card px-4 py-3 flex items-center justify-between shadow-sm">
+        <div>
+          <h1 className="text-lg font-bold text-foreground">Admin Dashboard</h1>
+          <p className="text-xs text-muted-foreground">Pharma Field Force Tracker</p>
+        </div>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={handleLogout}>
           <LogOut className="h-4 w-4" /> Logout
         </Button>
       </header>
       <div className="p-4">
         <Tabs defaultValue="map">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="map" className="gap-1 text-xs sm:text-sm">
               <MapPin className="h-4 w-4" /> Map
             </TabsTrigger>

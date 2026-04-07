@@ -147,7 +147,7 @@ const MRDashboard = () => {
   const handleCheckIn = async (clinic: Clinic) => {
     if (!route || !currentPos) return;
     const dist = distanceTo(clinic);
-    if (dist > 100) { toast.error(`Too far (${Math.round(dist)}m). Must be within 100m.`); return; }
+    if (dist > 100) { toast.error(`Too far (${Math.round(dist)}m). Move within 100m to check in.`); return; }
     setCheckingIn(clinic.id);
     try {
       await addDoc(collection(db, "visits"), {
@@ -163,7 +163,7 @@ const MRDashboard = () => {
       if (route.status === "assigned") {
         await updateDoc(doc(db, "routes", route.id), { status: "in-progress" });
       }
-      toast.success(`Checked in at ${clinic.name}`);
+      toast.success(`Check-in successful — ${clinic.name}`);
     } catch (e: any) {
       toast.error("Check-in failed");
     }
@@ -193,13 +193,13 @@ const MRDashboard = () => {
           <h1 className="text-lg font-bold text-foreground">{mrName}</h1>
           <p className="text-xs text-muted-foreground">Medical Representative</p>
         </div>
-        <Button variant="ghost" size="sm" className="gap-1" onClick={handleLogout}>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={handleLogout}>
           <LogOut className="h-4 w-4" /> Logout
         </Button>
       </div>
 
       {/* GPS Tracking */}
-      <Card>
+      <Card className="card-elevated">
         <CardHeader>
           <CardTitle className="flex items-center justify-between text-base">
             <span className="flex items-center gap-2">
@@ -228,7 +228,7 @@ const MRDashboard = () => {
       </Card>
 
       {/* Assigned Route */}
-      <Card>
+      <Card className="card-elevated">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Navigation className="h-5 w-5 text-primary" /> Assigned Route
@@ -271,7 +271,7 @@ const MRDashboard = () => {
                           variant={withinRange ? "default" : "outline"}
                           disabled={!withinRange || !currentPos || checkingIn === clinic.id}
                           onClick={() => handleCheckIn(clinic)}
-                          className="gap-1 shrink-0"
+                          className="gap-1 shrink-0 text-xs sm:text-sm"
                         >
                           <LocateFixed className="h-3 w-3" />
                           {checkingIn === clinic.id ? "…" : "Check-in"}
