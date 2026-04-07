@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield } from "lucide-react";
+import { Shield, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { loginUser, getUserRole } from "@/lib/firebaseAuth";
 import { doc, setDoc } from "firebase/firestore";
@@ -22,16 +21,11 @@ const Login = () => {
     setLoading(true);
     try {
       const user = await loginUser(email, password);
-      // Seed admin role doc if admin email
       if (email === ADMIN_EMAIL) {
         await setDoc(doc(db, "users", user.uid), { email, name: "Admin", role: "admin", createdAt: Date.now() }, { merge: true });
       }
       const role = await getUserRole(user.uid);
-      if (role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/mr");
-      }
+      navigate(role === "admin" ? "/admin" : "/mr");
     } catch (e: any) {
       toast.error(e.message || "Login failed");
     }
@@ -39,21 +33,22 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md shadow-xl shadow-primary/10 border-border/50">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="card-glass w-full max-w-md p-8 space-y-6">
+        <div className="text-center space-y-3">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15">
             <Shield className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Pharma Field Force Tracker</CardTitle>
-          <CardDescription>Login with your credentials</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
+          <h1 className="text-2xl font-bold text-foreground">Pharma Field Force</h1>
+          <p className="text-sm text-muted-foreground">Sign in to your account</p>
+        </div>
+        <div className="space-y-3">
           <Input
             placeholder="Email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="bg-secondary/50 border-border/40 h-12 rounded-xl"
           />
           <Input
             placeholder="Password"
@@ -61,15 +56,17 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+            className="bg-secondary/50 border-border/40 h-12 rounded-xl"
           />
-          <Button size="lg" className="w-full" onClick={handleLogin} disabled={loading}>
-            {loading ? "Logging in…" : "Login"}
+          <Button size="lg" className="w-full btn-glow h-12 rounded-xl gap-2" onClick={handleLogin} disabled={loading}>
+            <LogIn className="h-4 w-4" />
+            {loading ? "Signing in…" : "Sign In"}
           </Button>
-          <p className="text-xs text-muted-foreground text-center">
-            Admin: {ADMIN_EMAIL} · MRs: created by admin
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+        <p className="text-xs text-muted-foreground text-center">
+          Admin: {ADMIN_EMAIL} · MRs: created by admin
+        </p>
+      </div>
     </div>
   );
 };
