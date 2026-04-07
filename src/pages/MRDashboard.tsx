@@ -147,7 +147,7 @@ const MRDashboard = () => {
   const handleCheckIn = async (clinic: Clinic) => {
     if (!route || !currentPos) return;
     const dist = distanceTo(clinic);
-    if (dist > 100) { toast.error(`Too far (${Math.round(dist)}m). Must be within 100m.`); return; }
+    if (dist > 100) { toast.error(`Too far (${Math.round(dist)}m). Move within 100m to check in.`); return; }
     setCheckingIn(clinic.id);
     try {
       await addDoc(collection(db, "visits"), {
