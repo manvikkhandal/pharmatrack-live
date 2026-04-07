@@ -271,7 +271,7 @@ const MRDashboard = () => {
                           variant={withinRange ? "default" : "outline"}
                           disabled={!withinRange || !currentPos || checkingIn === clinic.id}
                           onClick={() => handleCheckIn(clinic)}
-                          className="gap-1 shrink-0"
+                          className="gap-1 shrink-0 text-xs sm:text-sm"
                         >
                           <LocateFixed className="h-3 w-3" />
                           {checkingIn === clinic.id ? "…" : "Check-in"}
