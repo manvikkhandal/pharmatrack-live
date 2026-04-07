@@ -199,7 +199,7 @@ const MRDashboard = () => {
       </div>
 
       {/* GPS Tracking */}
-      <Card>
+      <Card className="card-elevated">
         <CardHeader>
           <CardTitle className="flex items-center justify-between text-base">
             <span className="flex items-center gap-2">
