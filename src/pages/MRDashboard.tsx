@@ -8,7 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { MapPin, Navigation, LogOut, CheckCircle2, Circle, LocateFixed } from "lucide-react";
+import { MapPin, Navigation, LogOut, CheckCircle2, Circle, LocateFixed, ExternalLink } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface Clinic { id: string; name: string; lat: number; lng: number; order: number; }
 interface RouteDoc { id: string; mrId: string; mrName: string; status: string; createdAt: number; clinics: Clinic[]; }
@@ -105,8 +106,16 @@ const MRDashboard = () => {
     if (dist > 100) { toast.error(`Too far (${Math.round(dist)}m). Move within 100m.`); return; }
     setCheckingIn(clinic.id);
     try {
-      await addDoc(collection(db, "visits"), { routeId: route.id, mrId, clinicId: clinic.id, clinicName: clinic.name, lat: currentPos.lat, lng: currentPos.lng, checkedInAt: Date.now() });
-      if (route.status === "assigned") await updateDoc(doc(db, "routes", route.id), { status: "in-progress" });
+      await addDoc(collection(db, "visits"), {
+        routeId: route.id, mrId, clinicId: clinic.id, clinicName: clinic.name,
+        lat: currentPos.lat, lng: currentPos.lng, checkedInAt: Date.now(), status: "completed",
+      });
+      // Update route doc: mark clinic as completed by removing from clinics array
+      const updatedClinics = route.clinics.filter((c) => c.id !== clinic.id);
+      await updateDoc(doc(db, "routes", route.id), {
+        clinics: updatedClinics,
+        status: updatedClinics.length === 0 ? "completed" : "in-progress",
+      });
       toast.success(`Check-in successful — ${clinic.name}`);
     } catch { toast.error("Check-in failed"); }
     setCheckingIn(null);
@@ -120,6 +129,10 @@ const MRDashboard = () => {
     } catch { toast.error("Failed to complete route"); }
   };
 
+  const openDirections = (clinic: Clinic) => {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${clinic.lat},${clinic.lng}`, "_blank");
+  };
+
   const handleLogout = async () => { stopTracking(); await logoutUser(); navigate("/"); };
 
   return (
@@ -130,9 +143,12 @@ const MRDashboard = () => {
           <h1 className="text-lg font-bold">{mrName}</h1>
           <p className="text-xs text-muted-foreground">Medical Representative</p>
         </div>
-        <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <LogOut className="h-4 w-4" /> Logout
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <LogOut className="h-4 w-4" /> Logout
+          </button>
+        </div>
       </div>
 
       {/* GPS Tracking */}
@@ -143,7 +159,7 @@ const MRDashboard = () => {
           </span>
           <Switch checked={tracking} onCheckedChange={handleToggle} />
         </div>
-        <div className={`rounded-xl p-4 text-center ${tracking ? "bg-primary/10" : "bg-secondary/50"}`}>
+        <div className={`rounded-2xl p-4 text-center ${tracking ? "bg-primary/10" : "bg-secondary/50"}`}>
           {tracking ? (
             <>
               <div className="h-3 w-3 rounded-full bg-emerald-400 mx-auto mb-2 animate-pulse" />
@@ -170,28 +186,46 @@ const MRDashboard = () => {
               const dist = distanceTo(clinic);
               const withinRange = dist <= 100;
               return (
-                <div key={clinic.id} className={`flex items-center gap-3 rounded-xl border border-border/30 p-3 ${checked ? "bg-primary/10 border-primary/30" : "bg-secondary/30"}`}>
-                  {checked ? <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" /> : <Circle className="h-5 w-5 text-muted-foreground shrink-0" />}
-                  <div className="flex-1 min-w-0">
-                    <p className={`font-medium text-sm ${checked ? "line-through text-muted-foreground" : ""}`}>{clinic.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {clinic.lat.toFixed(4)}, {clinic.lng.toFixed(4)}
-                      {currentPos && !checked && (
-                        <span className={`ml-1 ${withinRange ? "text-emerald-400" : "text-destructive"}`}>
-                          · {dist < 1000 ? `${Math.round(dist)}m` : `${(dist / 1000).toFixed(1)}km`}
-                        </span>
-                      )}
-                    </p>
+                <div key={clinic.id} className={`rounded-2xl border border-border/30 p-3 space-y-2 ${checked ? "bg-primary/10 border-primary/30" : "bg-secondary/30"}`}>
+                  <div className="flex items-center gap-3">
+                    {checked ? <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" /> : <Circle className="h-5 w-5 text-muted-foreground shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-medium text-sm ${checked ? "line-through text-muted-foreground" : ""}`}>{clinic.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {clinic.lat.toFixed(4)}, {clinic.lng.toFixed(4)}
+                        {currentPos && !checked && (
+                          <span className={`ml-1 ${withinRange ? "text-emerald-400" : "text-destructive"}`}>
+                            · {dist < 1000 ? `${Math.round(dist)}m` : `${(dist / 1000).toFixed(1)}km`}
+                          </span>
+                        )}
+                      </p>
+                    </div>
                   </div>
                   {!checked && (
-                    <Button size="sm" variant={withinRange ? "default" : "outline"} disabled={!withinRange || !currentPos || checkingIn === clinic.id} onClick={() => handleCheckIn(clinic)} className="gap-1 shrink-0 text-xs rounded-lg">
-                      <LocateFixed className="h-3 w-3" /> {checkingIn === clinic.id ? "…" : "Check-in"}
-                    </Button>
+                    <div className="flex items-center gap-2 pl-8">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openDirections(clinic)}
+                        className="gap-1 text-xs rounded-xl"
+                      >
+                        <ExternalLink className="h-3 w-3" /> Directions
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={withinRange ? "default" : "outline"}
+                        disabled={!withinRange || !currentPos || checkingIn === clinic.id}
+                        onClick={() => handleCheckIn(clinic)}
+                        className={`gap-1 text-xs rounded-xl ${withinRange ? "btn-success" : ""}`}
+                      >
+                        <LocateFixed className="h-3 w-3" /> {checkingIn === clinic.id ? "…" : "Check-in"}
+                      </Button>
+                    </div>
                   )}
                 </div>
               );
             })}
-            <Button className="w-full btn-glow rounded-xl" disabled={!allChecked} onClick={handleCompleteRoute}>
+            <Button className="w-full btn-success rounded-2xl h-11" disabled={!allChecked} onClick={handleCompleteRoute}>
               {allChecked ? "✓ Complete Route" : `${visits.length}/${route.clinics.length} Clinics Visited`}
             </Button>
           </div>

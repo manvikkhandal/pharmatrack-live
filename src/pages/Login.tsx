@@ -7,6 +7,7 @@ import { loginUser, getUserRole } from "@/lib/firebaseAuth";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { toast } from "sonner";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const ADMIN_EMAIL = "admin@pharma.com";
 
@@ -33,7 +34,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="card-glass w-full max-w-md p-8 space-y-6">
         <div className="text-center space-y-3">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15">
