@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Plus, Trash2, MapPin, Users, Route, History, LogOut, Search, Loader2 } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
