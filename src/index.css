@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root,
+  .dark {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
@@ -28,6 +29,9 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
+    --success: 160 84% 39%;
+    --success-foreground: 210 40% 98%;
+
     --border: 217 33% 25%;
     --input: 217 33% 25%;
     --ring: 173 80% 40%;
@@ -42,6 +46,50 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217 33% 25%;
     --sidebar-ring: 173 80% 40%;
+  }
+
+  .light {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 173 80% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 93%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 20% 93%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 173 80% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 173 80% 36%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 173 80% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 93%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 20% 88%;
+    --sidebar-ring: 173 80% 36%;
   }
 }
 
@@ -61,6 +109,10 @@
     border-radius: 1.5rem;
   }
 
+  .light .card-glass {
+    @apply bg-card/80 shadow-lg shadow-black/5;
+  }
+
   .card-glass-sm {
     @apply bg-card/50 backdrop-blur-lg border border-border/30 shadow-lg shadow-black/15;
     border-radius: 1rem;
@@ -68,5 +120,15 @@
 
   .btn-glow {
     @apply bg-primary text-primary-foreground font-semibold shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all;
+  }
+
+  .btn-success {
+    @apply font-semibold shadow-lg transition-all;
+    background-color: hsl(var(--success));
+    color: hsl(var(--success-foreground));
+    box-shadow: 0 10px 15px -3px hsl(var(--success) / 0.3);
+  }
+  .btn-success:hover {
+    box-shadow: 0 10px 15px -3px hsl(var(--success) / 0.5);
   }
 }
