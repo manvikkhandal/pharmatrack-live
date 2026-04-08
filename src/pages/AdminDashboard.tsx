@@ -481,9 +481,12 @@ const AdminDashboard = () => {
           <h1 className="text-lg font-bold">Admin Dashboard</h1>
           <p className="text-xs text-muted-foreground">Pharma Field Force Tracker</p>
         </div>
-        <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <LogOut className="h-4 w-4" /> Logout
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <LogOut className="h-4 w-4" /> Logout
+          </button>
+        </div>
       </header>
 
       <div className="p-4 sm:p-6 max-w-5xl mx-auto">
